@@ -9,12 +9,11 @@ RUN apt-get update -qq && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy Gemfile and install gems
-COPY back/Gemfile back/Gemfile.lock ./back/
-RUN cd back && bundle install
+# Copy the entire application first so engines/free is available
+COPY . ./
 
-# Copy the rest of the application
-COPY back ./back/
+# Then run bundle install
+RUN cd back && bundle install
 
 # Set environment variables
 ENV RAILS_ENV=production
@@ -31,4 +30,4 @@ EXPOSE 3000
 ENTRYPOINT ["./back/entrypoint.sh"]
 
 # Start the Rails server
-CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["bash", "-c", "cd back && rails server -b 0.0.0.0 -p $PORT"]
