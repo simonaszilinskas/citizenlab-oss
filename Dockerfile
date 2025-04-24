@@ -12,6 +12,9 @@ WORKDIR /app
 # Copy the entire application first so engines/free is available
 COPY . ./
 
+# Make sure entrypoint script is executable
+RUN chmod +x ./back/entrypoint.sh
+
 # Then run bundle install
 RUN cd back && bundle install
 
@@ -26,8 +29,5 @@ ENV PORT=3000
 # Expose the port
 EXPOSE 3000
 
-# Set the entrypoint
-ENTRYPOINT ["./back/entrypoint.sh"]
-
-# Start the Rails server
-CMD ["bash", "-c", "cd back && rails server -b 0.0.0.0 -p $PORT"]
+# Start the Rails server directly instead of using entrypoint script
+CMD ["bash", "-c", "cd back && bundle exec rails server -b 0.0.0.0 -p $PORT"]
